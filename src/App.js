@@ -12,7 +12,7 @@ function Square({value, onSquareClick}) {
 function Board({xIsNext, squares, onPlay}) {
 
   function handleClick(i) {
-    if(squares[i] || calulateWinner(squares)) {
+    if(calculateWinner(squares) || squares[i]) {
       return;
     }
     const nextSquares = squares.slice();
@@ -24,7 +24,7 @@ function Board({xIsNext, squares, onPlay}) {
     onPlay(nextSquares);
   }
 
-  const winner = calulateWinner(squares);
+  const winner = calculateWinner(squares);
   let  status;
   if (winner) {
     status = "Winner : "+ winner;
@@ -56,27 +56,49 @@ function Board({xIsNext, squares, onPlay}) {
 
 export default function Game(){
   const [xIsNext, setXIsNext] = useState(true);
-  const [history, setHistory] = useState(Array(9).fill(null));
-  const currentSquares = history[history.length-1];
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+  const currentSquares = history[currentMove];
+
+  function jumpTo(nextMove) {
+    setCurrentMove(nextMove);
+    setXIsNext(nextMove % 2 === 0);
+  }
+
+  const moves = history.map((sqaures, move)=>{
+    let direction;
+    if(move>0){
+      direction = "Go to move # "+ move;
+    }else {
+      direction = "Go to Game Start";
+    }
+    return (
+      <li key={move}>
+        <button onClick={()=>jumpTo(move)}>{direction}</button>
+      </li>
+    );
+  });
 
   function handlePlay(nextSquares) {
-    setHistory([...history, nextSquares]);
+    const nextHistory = [...history.slice(0, currentMove+1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length-1);
     setXIsNext(!xIsNext);
   }
 
   return (
-    <div className={"game"}>
+    <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <ol>{}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
 };
 
-function calulateWinner(squares) {
+function calculateWinner(squares) {
   const  lines =[
     [0, 1, 2],
     [3, 4, 5],

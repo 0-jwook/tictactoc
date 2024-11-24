@@ -12,6 +12,14 @@
     border: 1px solid black;
 }
 
+.Square:active {
+    background: #f5f5f5;
+}
+
+.game-info{
+    margin: 20px 40px;
+
+}
 
 
 .board-row {
@@ -22,6 +30,8 @@
     align-items: center;
 }
 
-.Square:active {
-    background: #f5f5f5;
+.game{
+    display: flex;
+    justify-content: center;
+
 }
